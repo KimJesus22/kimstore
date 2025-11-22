@@ -1,4 +1,6 @@
-Este es un proyecto [Next.js](https://nextjs.org) iniciado con [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# KimStore - Tienda de Componentes de PC
+
+**KimStore** es una aplicación de comercio electrónico (e-commerce) full-stack diseñada para la venta de componentes de hardware de alto rendimiento. Este proyecto sirve como una demostración técnica de una tienda online moderna, con funcionalidades como catálogo de productos, carrito de compras y gestión de usuarios.
 
 ## Empezando
 
