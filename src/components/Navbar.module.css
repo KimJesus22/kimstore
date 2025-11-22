@@ -1,0 +1,58 @@
+.navbar {
+  background-color: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  background-color: hsl(var(--background) / 0.8);
+}
+
+.navContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  letter-spacing: -0.05em;
+}
+
+.logoHighlight {
+  color: hsl(var(--primary));
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.navLink {
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  transition: color 0.2s ease;
+}
+
+.navLink:hover {
+  color: hsl(var(--primary));
+}
+
+.cartBtn {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cartBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px hsl(var(--primary) / 0.3);
+}

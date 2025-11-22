@@ -1,0 +1,84 @@
+.card {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px hsl(var(--foreground) / 0.05);
+    border-color: hsl(var(--primary) / 0.5);
+}
+
+.imageContainer {
+    aspect-ratio: 16/9;
+    background-color: hsl(var(--muted));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.placeholderImage {
+    color: hsl(var(--muted-foreground));
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.content {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.category {
+    font-size: 0.75rem;
+    color: hsl(var(--primary));
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: hsl(var(--card-foreground));
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.footer {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: hsl(var(--foreground));
+}
+
+.addButton {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: calc(var(--radius) - 0.25rem);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.addButton:hover {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+}

@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   description: "Componentes de PC premium para entusiastas",
 };
 
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
+// ... imports
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -25,7 +30,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+          <Navbar />
+          {children}
+          <Footer />
+        </div>
       </body>
     </html>
   );

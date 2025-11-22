@@ -1,66 +1,44 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import ProductCard from '@/components/products/ProductCard';
+import styles from './page.module.css';
+import Link from 'next/link';
+
+// Mock data for initial display
+const PRODUCTS = [
+  { id: '1', name: 'NVIDIA GeForce RTX 4090', price: 1599.99, category: 'GPU', image: '/placeholder.jpg' },
+  { id: '2', name: 'Intel Core i9-14900K', price: 589.99, category: 'CPU', image: '/placeholder.jpg' },
+  { id: '3', name: 'Samsung 990 PRO 2TB', price: 169.99, category: 'Storage', image: '/placeholder.jpg' },
+  { id: '4', name: 'Corsair Dominator 32GB DDR5', price: 189.99, category: 'RAM', image: '/placeholder.jpg' },
+  { id: '5', name: 'ASUS ROG Maximus Z790', price: 699.99, category: 'Motherboard', image: '/placeholder.jpg' },
+  { id: '6', name: 'Lian Li O11 Dynamic Evo', price: 159.99, category: 'Case', image: '/placeholder.jpg' },
+];
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className={styles.main}>
+
+
+      <section className={styles.hero}>
+        <div className="container">
+          <h1 className={styles.heroTitle}>
+            Componentes de <span className={styles.highlight}>Alto Rendimiento</span>
+          </h1>
+          <p className={styles.heroSubtitle}>
+            Construye la PC de tus sueños con los mejores componentes del mercado.
           </p>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section className={`container ${styles.productSection}`}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <h2 className={styles.sectionTitle} style={{ marginBottom: 0 }}>Productos Destacados</h2>
+          <Link href="/productos" className="btn btn-outline">Ver Todo</Link>
         </div>
-      </main>
-    </div>
+        <div className={styles.grid}>
+          {PRODUCTS.slice(0, 3).map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }
