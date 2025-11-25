@@ -21,14 +21,16 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
 }
 
-.placeholderImage {
-    color: hsl(var(--muted-foreground));
-    font-weight: 600;
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+.productImage {
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .productImage {
+    transform: scale(1.05);
 }
 
 .content {
