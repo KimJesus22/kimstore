@@ -38,6 +38,7 @@ export default async function CartPage() {
                     src={item.product.image}
                     alt={item.product.name}
                     fill
+                    sizes="96px"
                     className="object-cover"
                   />
                 ) : (
