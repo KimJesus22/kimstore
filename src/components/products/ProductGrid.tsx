@@ -1,14 +1,7 @@
 import React from 'react';
 import ProductCard from './ProductCard';
 import styles from './ProductGrid.module.css';
-
-type Product = {
-  id: string;
-  name: string;
-  price: number;
-  category: string;
-  image: string;
-};
+import { Product } from '@/types/product.types';
 
 interface ProductGridProps {
   products: Product[];

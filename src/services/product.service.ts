@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { unstable_cache } from 'next/cache';
+import { unstable_cache, revalidateTag } from 'next/cache';
 import { productRepository } from '@/repositories/product.repository';
 import type {
   Product,
@@ -182,8 +182,7 @@ export class ProductService {
    * Invalida todo el caché de productos
    */
   private invalidateCache(): void {
-    const { revalidateTag } = require('next/cache');
-    revalidateTag('products');
+    (revalidateTag as (tag: string) => void)('products');
   }
 }
 

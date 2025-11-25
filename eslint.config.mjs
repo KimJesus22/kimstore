@@ -13,7 +13,18 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
+    'coverage/**',
   ]),
+  {
+    rules: {
+      '@typescript-eslint/no-explicit-any': [
+        'warn',
+        {
+          ignoreRestArgs: true,
+        },
+      ],
+    },
+  },
   prettierConfig,
 ]);
 

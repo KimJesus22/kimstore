@@ -13,6 +13,7 @@ Esta guía detalla los pasos para desplegar la aplicación **PC Store** en [Verc
 Para producción, necesitas una instancia de PostgreSQL accesible desde internet.
 
 ### Opción A: Vercel Postgres (Recomendado)
+
 1.  En tu dashboard de Vercel, ve a la pestaña "Storage".
 2.  Crea una nueva base de datos "Postgres".
 3.  Vincula la base de datos a tu proyecto de Vercel.
@@ -20,6 +21,7 @@ Para producción, necesitas una instancia de PostgreSQL accesible desde internet
 5.  **Nota**: Deberás actualizar tu `schema.prisma` o tu configuración para usar estas variables si difieren del estándar `DATABASE_URL`. Vercel suele proveer `POSTGRES_PRISMA_URL` y `POSTGRES_URL_NON_POOLING`.
 
 ### Opción B: Proveedor Externo (Neon, Supabase, etc.)
+
 1.  Crea una base de datos en tu proveedor.
 2.  Obtén la "Connection String" (URL de conexión).
 
@@ -27,13 +29,13 @@ Para producción, necesitas una instancia de PostgreSQL accesible desde internet
 
 En el dashboard de tu proyecto en Vercel, ve a **Settings > Environment Variables** y añade las siguientes:
 
-| Variable | Descripción | Ejemplo |
-|----------|-------------|---------|
-| `DATABASE_URL` | URL de conexión a tu BD PostgreSQL | `postgres://user:pass@host:5432/db` |
-| `NEXT_PUBLIC_APP_URL` | URL de tu despliegue en Vercel | `https://tu-proyecto.vercel.app` |
-| `STRIPE_SECRET_KEY` | Clave secreta de Stripe (Live) | `sk_live_...` |
-| `STRIPE_PUBLISHABLE_KEY` | Clave pública de Stripe (Live) | `pk_live_...` |
-| `STRIPE_WEBHOOK_SECRET` | Secreto del Webhook de Stripe (Live) | `whsec_...` |
+| Variable                 | Descripción                          | Ejemplo                             |
+| ------------------------ | ------------------------------------ | ----------------------------------- |
+| `DATABASE_URL`           | URL de conexión a tu BD PostgreSQL   | `postgres://user:pass@host:5432/db` |
+| `NEXT_PUBLIC_APP_URL`    | URL de tu despliegue en Vercel       | `https://tu-proyecto.vercel.app`    |
+| `STRIPE_SECRET_KEY`      | Clave secreta de Stripe (Live)       | `sk_live_...`                       |
+| `STRIPE_PUBLISHABLE_KEY` | Clave pública de Stripe (Live)       | `pk_live_...`                       |
+| `STRIPE_WEBHOOK_SECRET`  | Secreto del Webhook de Stripe (Live) | `whsec_...`                         |
 
 > [!IMPORTANT]
 > Asegúrate de usar las claves de **producción** (Live) de Stripe, no las de prueba (Test), cuando estés listo para recibir pagos reales.
@@ -47,13 +49,16 @@ Vercel detecta automáticamente que es un proyecto Next.js. La configuración po
 - **Install Command**: `npm install`
 
 ### Migraciones de Base de Datos
+
 Para aplicar las migraciones de Prisma en producción, tienes dos opciones:
 
 1.  **En el Build Command (Más fácil)**:
     Cambia el "Build Command" en Vercel a:
+
     ```bash
     npx prisma migrate deploy && next build
     ```
+
     Esto asegura que la base de datos esté sincronizada antes de construir la app.
 
 2.  **Manualmente**:
