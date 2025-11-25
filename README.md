@@ -17,6 +17,7 @@
 - **Estilos**: Vanilla CSS con **CSS Modules** y variables CSS nativas (sin frameworks de terceros como Tailwind, para control total).
 - **Base de Datos**: [PostgreSQL](https://www.postgresql.org/) como base de datos relacional.
 - **ORM**: [Prisma](https://www.prisma.io/) para el modelado de datos y consultas type-safe.
+- **Caché**: Sistema de dos niveles con **LRU Cache** en memoria y **Next.js unstable_cache** para optimización de rendimiento.
 - **Control de Versiones**: Git y GitHub.
 
 ## 🏗️ Decisiones de Arquitectura

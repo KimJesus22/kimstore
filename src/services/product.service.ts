@@ -1,6 +1,8 @@
 import { cache } from 'react';
 import { unstable_cache, revalidateTag } from 'next/cache';
 import { productRepository } from '@/repositories/product.repository';
+import { productCache, cacheKeys } from '@/lib/cache.utils';
+import { CACHE_CONFIG } from '@/lib/cache.config';
 import type {
   Product,
   ProductListItem,
@@ -29,10 +31,23 @@ export class ProductService {
   );
 
   /**
-   * Obtiene un producto por ID (con caché de request)
+   * Obtiene un producto por ID (con caché de dos niveles)
    */
   getProductById = cache(async (id: string): Promise<Product> => {
-    return productRepository.findById(id);
+    // Nivel 1: Caché en memoria
+    const cacheKey = cacheKeys.product.byId(id);
+    const cached = productCache.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    // Nivel 2: Base de datos
+    const product = await productRepository.findById(id);
+
+    // Guardar en caché
+    productCache.set(cacheKey, product, CACHE_CONFIG.products.byId.memoryTTL);
+
+    return product;
   });
 
   /**
@@ -64,18 +79,33 @@ export class ProductService {
   );
 
   /**
-   * Obtiene productos destacados (con caché)
+   * Obtiene productos destacados (con caché de dos niveles)
    */
-  getFeaturedProducts = unstable_cache(
-    async (limit: number = 6): Promise<Product[]> => {
-      return productRepository.findFeatured(limit);
-    },
-    ['featured-products'],
-    {
-      revalidate: 600, // 10 minutos
-      tags: ['products', 'featured'],
+  getFeaturedProducts = async (limit: number = 6): Promise<Product[]> => {
+    // Nivel 1: Caché en memoria
+    const cacheKey = cacheKeys.product.featured(limit);
+    const cached = productCache.get(cacheKey);
+    if (cached) {
+      return cached;
     }
-  );
+
+    // Nivel 2: Next.js cache + Base de datos
+    const getFeaturedCached = unstable_cache(
+      async () => productRepository.findFeatured(limit),
+      ['featured-products', String(limit)],
+      {
+        revalidate: CACHE_CONFIG.products.featured.nextTTL,
+        tags: ['products', 'featured'],
+      }
+    );
+
+    const products = await getFeaturedCached();
+
+    // Guardar en caché de memoria
+    productCache.set(cacheKey, products, CACHE_CONFIG.products.featured.memoryTTL);
+
+    return products;
+  };
 
   /**
    * Busca productos (con caché corto)
@@ -182,7 +212,11 @@ export class ProductService {
    * Invalida todo el caché de productos
    */
   private invalidateCache(): void {
+    // Invalidar caché de Next.js
     (revalidateTag as (tag: string) => void)('products');
+
+    // Limpiar caché en memoria
+    productCache.clear();
   }
 }
 
