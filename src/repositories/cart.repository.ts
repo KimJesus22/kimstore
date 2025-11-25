@@ -6,193 +6,196 @@ import { NotFoundError } from '@/lib/api-error';
  * Repositorio de carrito - Capa de acceso a datos con Prisma
  */
 export class CartRepository {
-    /**
-     * Obtiene el carrito de un usuario (o crea uno nuevo)
-     */
-    async findOrCreateByUserId(userId: string): Promise<Cart> {
-        let cart = await prisma.cart.findUnique({
-            where: { userId },
+  /**
+   * Obtiene el carrito de un usuario (o crea uno nuevo)
+   */
+  async findOrCreateByUserId(userId: string): Promise<Cart> {
+    let cart = await prisma.cart.findUnique({
+      where: { userId },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
+
+    if (!cart) {
+      cart = await prisma.cart.create({
+        data: { userId },
+        include: {
+          items: {
             include: {
-                items: {
-                    include: {
-                        product: true,
-                    },
-                },
+              product: true,
             },
-        });
-
-        if (!cart) {
-            cart = await prisma.cart.create({
-                data: { userId },
-                include: {
-                    items: {
-                        include: {
-                            product: true,
-                        },
-                    },
-                },
-            });
-        }
-
-        return cart as Cart;
+          },
+        },
+      });
     }
 
-    /**
-     * Obtiene un carrito por ID
-     */
-    async findById(cartId: string): Promise<Cart> {
-        const cart = await prisma.cart.findUnique({
-            where: { id: cartId },
-            include: {
-                items: {
-                    include: {
-                        product: true,
-                    },
-                },
-            },
-        });
+    return cart as Cart;
+  }
 
-        if (!cart) {
-            throw new NotFoundError('Carrito');
-        }
+  /**
+   * Obtiene un carrito por ID
+   */
+  async findById(cartId: string): Promise<Cart> {
+    const cart = await prisma.cart.findUnique({
+      where: { id: cartId },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
+    });
 
-        return cart as Cart;
+    if (!cart) {
+      throw new NotFoundError('Carrito');
     }
 
-    /**
-     * Añade un item al carrito (o actualiza si ya existe)
-     */
-    async addItem(cartId: string, productId: string, quantity: number): Promise<CartItem> {
-        // Verificar si el item ya existe
-        const existingItem = await prisma.cartItem.findUnique({
-            where: {
-                cartId_productId: {
-                    cartId,
-                    productId,
-                },
-            },
-        });
+    return cart as Cart;
+  }
 
-        if (existingItem) {
-            // Actualizar cantidad
-            const updated = await prisma.cartItem.update({
-                where: { id: existingItem.id },
-                data: { quantity: existingItem.quantity + quantity },
-                include: { product: true },
-            });
-            return updated as CartItem;
-        }
+  /**
+   * Añade un item al carrito (o actualiza si ya existe)
+   */
+  async addItem(cartId: string, productId: string, quantity: number): Promise<CartItem> {
+    // Verificar si el item ya existe
+    const existingItem = await prisma.cartItem.findUnique({
+      where: {
+        cartId_productId: {
+          cartId,
+          productId,
+        },
+      },
+    });
 
-        // Crear nuevo item
-        const newItem = await prisma.cartItem.create({
-            data: {
-                cartId,
-                productId,
-                quantity,
-            },
-            include: { product: true },
-        });
-
-        return newItem as CartItem;
+    if (existingItem) {
+      // Actualizar cantidad
+      const updated = await prisma.cartItem.update({
+        where: { id: existingItem.id },
+        data: { quantity: existingItem.quantity + quantity },
+        include: { product: true },
+      });
+      return updated as CartItem;
     }
 
-    /**
-     * Actualiza la cantidad de un item
-     */
-    async updateItemQuantity(cartId: string, productId: string, quantity: number): Promise<CartItem> {
-        const item = await prisma.cartItem.findUnique({
-            where: {
-                cartId_productId: {
-                    cartId,
-                    productId,
-                },
-            },
-        });
+    // Crear nuevo item
+    const newItem = await prisma.cartItem.create({
+      data: {
+        cartId,
+        productId,
+        quantity,
+      },
+      include: { product: true },
+    });
 
-        if (!item) {
-            throw new NotFoundError('Item del carrito');
-        }
+    return newItem as CartItem;
+  }
 
-        const updated = await prisma.cartItem.update({
-            where: { id: item.id },
-            data: { quantity },
-            include: { product: true },
-        });
+  /**
+   * Actualiza la cantidad de un item
+   */
+  async updateItemQuantity(cartId: string, productId: string, quantity: number): Promise<CartItem> {
+    const item = await prisma.cartItem.findUnique({
+      where: {
+        cartId_productId: {
+          cartId,
+          productId,
+        },
+      },
+    });
 
-        return updated as CartItem;
+    if (!item) {
+      throw new NotFoundError('Item del carrito');
     }
 
-    /**
-     * Elimina un item del carrito
-     */
-    async removeItem(cartId: string, productId: string): Promise<void> {
-        const item = await prisma.cartItem.findUnique({
-            where: {
-                cartId_productId: {
-                    cartId,
-                    productId,
-                },
-            },
-        });
+    const updated = await prisma.cartItem.update({
+      where: { id: item.id },
+      data: { quantity },
+      include: { product: true },
+    });
 
-        if (!item) {
-            throw new NotFoundError('Item del carrito');
-        }
+    return updated as CartItem;
+  }
 
-        await prisma.cartItem.delete({
-            where: { id: item.id },
-        });
+  /**
+   * Elimina un item del carrito
+   */
+  async removeItem(cartId: string, productId: string): Promise<void> {
+    const item = await prisma.cartItem.findUnique({
+      where: {
+        cartId_productId: {
+          cartId,
+          productId,
+        },
+      },
+    });
+
+    if (!item) {
+      throw new NotFoundError('Item del carrito');
     }
 
-    /**
-     * Limpia todos los items del carrito
-     */
-    async clearItems(cartId: string): Promise<void> {
-        await prisma.cartItem.deleteMany({
-            where: { cartId },
-        });
-    }
+    await prisma.cartItem.delete({
+      where: { id: item.id },
+    });
+  }
 
-    /**
-     * Obtiene todos los items del carrito con productos
-     */
-    async getItems(cartId: string): Promise<CartItem[]> {
-        const items = await prisma.cartItem.findMany({
-            where: { cartId },
-            include: { product: true },
-        });
+  /**
+   * Limpia todos los items del carrito
+   */
+  async clearItems(cartId: string): Promise<void> {
+    await prisma.cartItem.deleteMany({
+      where: { cartId },
+    });
+  }
 
-        return items as CartItem[];
-    }
+  /**
+   * Obtiene todos los items del carrito con productos
+   */
+  async getItems(cartId: string): Promise<CartItem[]> {
+    const items = await prisma.cartItem.findMany({
+      where: { cartId },
+      include: { product: true },
+    });
 
-    /**
-     * Sincroniza items del carrito (útil para merge)
-     */
-    async syncItems(cartId: string, items: Array<{ productId: string; quantity: number }>): Promise<Cart> {
-        // Limpiar items existentes
-        await this.clearItems(cartId);
+    return items as CartItem[];
+  }
 
-        // Añadir nuevos items
-        await prisma.cartItem.createMany({
-            data: items.map(item => ({
-                cartId,
-                productId: item.productId,
-                quantity: item.quantity,
-            })),
-        });
+  /**
+   * Sincroniza items del carrito (útil para merge)
+   */
+  async syncItems(
+    cartId: string,
+    items: Array<{ productId: string; quantity: number }>
+  ): Promise<Cart> {
+    // Limpiar items existentes
+    await this.clearItems(cartId);
 
-        // Retornar carrito actualizado
-        return this.findById(cartId);
-    }
+    // Añadir nuevos items
+    await prisma.cartItem.createMany({
+      data: items.map((item) => ({
+        cartId,
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+    });
 
-    /**
-     * Elimina un carrito completo
-     */
-    async delete(cartId: string): Promise<void> {
-        await prisma.cart.delete({
-            where: { id: cartId },
-        });
-    }
+    // Retornar carrito actualizado
+    return this.findById(cartId);
+  }
+
+  /**
+   * Elimina un carrito completo
+   */
+  async delete(cartId: string): Promise<void> {
+    await prisma.cart.delete({
+      where: { id: cartId },
+    });
+  }
 }
 
 // Exportar instancia singleton

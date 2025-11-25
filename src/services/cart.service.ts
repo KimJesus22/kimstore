@@ -8,209 +8,210 @@ import { BadRequestError } from '@/lib/api-error';
  * Servicio de carrito - Lógica de negocio
  */
 export class CartService {
-    /**
-     * Obtiene el carrito de un usuario con totales calculados
-     */
-    async getCart(userId?: string): Promise<CartWithTotals> {
-        let cart: Cart;
+  /**
+   * Obtiene el carrito de un usuario con totales calculados
+   */
+  async getCart(userId?: string): Promise<CartWithTotals> {
+    let cart: Cart;
 
-        if (userId) {
-            cart = await cartRepository.findOrCreateByUserId(userId);
-        } else {
-            // Para usuarios no autenticados, retornar carrito vacío
-            cart = {
-                id: 'temp',
-                userId: null,
-                items: [],
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            };
-        }
-
-        const totals = calculateTotals(cart.items);
-
-        return { cart, totals };
+    if (userId) {
+      cart = await cartRepository.findOrCreateByUserId(userId);
+    } else {
+      // Para usuarios no autenticados, retornar carrito vacío
+      cart = {
+        id: 'temp',
+        userId: null,
+        items: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
     }
 
-    /**
-     * Añade un producto al carrito
-     */
-    async addToCart(
-        productId: string,
-        quantity: number,
-        userId?: string
-    ): Promise<CartWithTotals> {
-        // Validar que el producto existe y tiene stock
-        const product = await productRepository.findById(productId);
+    const totals = calculateTotals(cart.items);
 
-        if (!userId) {
-            throw new BadRequestError('Se requiere autenticación para añadir al carrito');
-        }
+    return { cart, totals };
+  }
 
-        // Obtener o crear carrito
-        const cart = await cartRepository.findOrCreateByUserId(userId);
+  /**
+   * Añade un producto al carrito
+   */
+  async addToCart(productId: string, quantity: number, userId?: string): Promise<CartWithTotals> {
+    // Validar que el producto existe y tiene stock
+    const product = await productRepository.findById(productId);
 
-        // Verificar stock disponible
-        const currentItem = cart.items.find(item => item.productId === productId);
-        const currentQuantity = currentItem?.quantity || 0;
-
-        const stockValidation = validateStock(product.stock, currentQuantity, quantity);
-
-        if (!stockValidation.valid) {
-            throw new BadRequestError(stockValidation.message || 'Stock insuficiente');
-        }
-
-        // Añadir item al carrito
-        await cartRepository.addItem(cart.id, productId, quantity);
-
-        // Retornar carrito actualizado
-        return this.getCart(userId);
+    if (!userId) {
+      throw new BadRequestError('Se requiere autenticación para añadir al carrito');
     }
 
-    /**
-     * Actualiza la cantidad de un producto en el carrito
-     */
-    async updateQuantity(
-        productId: string,
-        quantity: number,
-        userId?: string
-    ): Promise<CartWithTotals> {
-        if (!userId) {
-            throw new BadRequestError('Se requiere autenticación');
-        }
+    // Obtener o crear carrito
+    const cart = await cartRepository.findOrCreateByUserId(userId);
 
-        const cart = await cartRepository.findOrCreateByUserId(userId);
+    // Verificar stock disponible
+    const currentItem = cart.items.find((item) => item.productId === productId);
+    const currentQuantity = currentItem?.quantity || 0;
 
-        // Si la cantidad es 0, eliminar el item
-        if (quantity === 0) {
-            await cartRepository.removeItem(cart.id, productId);
-            return this.getCart(userId);
-        }
+    const stockValidation = validateStock(product.stock, currentQuantity, quantity);
 
-        // Validar stock
-        const product = await productRepository.findById(productId);
-        const stockValidation = validateStock(product.stock, 0, quantity);
-
-        if (!stockValidation.valid) {
-            throw new BadRequestError(stockValidation.message || 'Stock insuficiente');
-        }
-
-        // Actualizar cantidad
-        await cartRepository.updateItemQuantity(cart.id, productId, quantity);
-
-        return this.getCart(userId);
+    if (!stockValidation.valid) {
+      throw new BadRequestError(stockValidation.message || 'Stock insuficiente');
     }
 
-    /**
-     * Elimina un producto del carrito
-     */
-    async removeFromCart(productId: string, userId?: string): Promise<CartWithTotals> {
-        if (!userId) {
-            throw new BadRequestError('Se requiere autenticación');
-        }
+    // Añadir item al carrito
+    await cartRepository.addItem(cart.id, productId, quantity);
 
-        const cart = await cartRepository.findOrCreateByUserId(userId);
-        await cartRepository.removeItem(cart.id, productId);
+    // Retornar carrito actualizado
+    return this.getCart(userId);
+  }
 
-        return this.getCart(userId);
+  /**
+   * Actualiza la cantidad de un producto en el carrito
+   */
+  async updateQuantity(
+    productId: string,
+    quantity: number,
+    userId?: string
+  ): Promise<CartWithTotals> {
+    if (!userId) {
+      throw new BadRequestError('Se requiere autenticación');
     }
 
-    /**
-     * Limpia el carrito completo
-     */
-    async clearCart(userId?: string): Promise<CartWithTotals> {
-        if (!userId) {
-            throw new BadRequestError('Se requiere autenticación');
-        }
+    const cart = await cartRepository.findOrCreateByUserId(userId);
 
-        const cart = await cartRepository.findOrCreateByUserId(userId);
-        await cartRepository.clearItems(cart.id);
-
-        return this.getCart(userId);
+    // Si la cantidad es 0, eliminar el item
+    if (quantity === 0) {
+      await cartRepository.removeItem(cart.id, productId);
+      return this.getCart(userId);
     }
 
-    /**
-     * Sincroniza el carrito local con el carrito del usuario (al hacer login)
-     */
-    async syncCart(
-        localItems: Array<{ productId: string; quantity: number }>,
-        userId: string
-    ): Promise<CartWithTotals> {
-        // Obtener carrito del servidor
-        const serverCart = await cartRepository.findOrCreateByUserId(userId);
+    // Validar stock
+    const product = await productRepository.findById(productId);
+    const stockValidation = validateStock(product.stock, 0, quantity);
 
-        // Crear carrito temporal con items locales
-        const localCart: Cart = {
-            id: 'temp',
-            userId: null,
-            items: [],
-            createdAt: new Date(),
-            updatedAt: new Date(),
-        };
-
-        // Cargar productos para los items locales
-        for (const localItem of localItems) {
-            try {
-                const product = await productRepository.findById(localItem.productId);
-                localCart.items.push({
-                    id: 'temp',
-                    cartId: 'temp',
-                    productId: localItem.productId,
-                    product,
-                    quantity: localItem.quantity,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                });
-            } catch (error) {
-                // Ignorar productos que ya no existen
-                console.warn(`Product ${localItem.productId} not found, skipping`);
-            }
-        }
-
-        // Fusionar carritos
-        const mergedItems = mergeCarts(localCart, serverCart);
-
-        // Preparar items para sincronización
-        const itemsToSync = mergedItems.map(item => ({
-            productId: item.productId,
-            quantity: item.quantity,
-        }));
-
-        // Sincronizar en la base de datos
-        await cartRepository.syncItems(serverCart.id, itemsToSync);
-
-        // Retornar carrito actualizado
-        return this.getCart(userId);
+    if (!stockValidation.valid) {
+      throw new BadRequestError(stockValidation.message || 'Stock insuficiente');
     }
 
-    /**
-     * Valida el stock de todos los items del carrito
-     */
-    async validateCartStock(userId: string): Promise<{
-        valid: boolean;
-        issues: Array<{ productId: string; productName: string; available: number; requested: number }>;
-    }> {
-        const cart = await cartRepository.findOrCreateByUserId(userId);
-        const issues: Array<{ productId: string; productName: string; available: number; requested: number }> = [];
+    // Actualizar cantidad
+    await cartRepository.updateItemQuantity(cart.id, productId, quantity);
 
-        for (const item of cart.items) {
-            const product = await productRepository.findById(item.productId);
+    return this.getCart(userId);
+  }
 
-            if (item.quantity > product.stock) {
-                issues.push({
-                    productId: item.productId,
-                    productName: item.product.name,
-                    available: product.stock,
-                    requested: item.quantity,
-                });
-            }
-        }
-
-        return {
-            valid: issues.length === 0,
-            issues,
-        };
+  /**
+   * Elimina un producto del carrito
+   */
+  async removeFromCart(productId: string, userId?: string): Promise<CartWithTotals> {
+    if (!userId) {
+      throw new BadRequestError('Se requiere autenticación');
     }
+
+    const cart = await cartRepository.findOrCreateByUserId(userId);
+    await cartRepository.removeItem(cart.id, productId);
+
+    return this.getCart(userId);
+  }
+
+  /**
+   * Limpia el carrito completo
+   */
+  async clearCart(userId?: string): Promise<CartWithTotals> {
+    if (!userId) {
+      throw new BadRequestError('Se requiere autenticación');
+    }
+
+    const cart = await cartRepository.findOrCreateByUserId(userId);
+    await cartRepository.clearItems(cart.id);
+
+    return this.getCart(userId);
+  }
+
+  /**
+   * Sincroniza el carrito local con el carrito del usuario (al hacer login)
+   */
+  async syncCart(
+    localItems: Array<{ productId: string; quantity: number }>,
+    userId: string
+  ): Promise<CartWithTotals> {
+    // Obtener carrito del servidor
+    const serverCart = await cartRepository.findOrCreateByUserId(userId);
+
+    // Crear carrito temporal con items locales
+    const localCart: Cart = {
+      id: 'temp',
+      userId: null,
+      items: [],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    // Cargar productos para los items locales
+    for (const localItem of localItems) {
+      try {
+        const product = await productRepository.findById(localItem.productId);
+        localCart.items.push({
+          id: 'temp',
+          cartId: 'temp',
+          productId: localItem.productId,
+          product,
+          quantity: localItem.quantity,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      } catch (error) {
+        // Ignorar productos que ya no existen
+        console.warn(`Product ${localItem.productId} not found, skipping`);
+      }
+    }
+
+    // Fusionar carritos
+    const mergedItems = mergeCarts(localCart, serverCart);
+
+    // Preparar items para sincronización
+    const itemsToSync = mergedItems.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+    }));
+
+    // Sincronizar en la base de datos
+    await cartRepository.syncItems(serverCart.id, itemsToSync);
+
+    // Retornar carrito actualizado
+    return this.getCart(userId);
+  }
+
+  /**
+   * Valida el stock de todos los items del carrito
+   */
+  async validateCartStock(userId: string): Promise<{
+    valid: boolean;
+    issues: Array<{ productId: string; productName: string; available: number; requested: number }>;
+  }> {
+    const cart = await cartRepository.findOrCreateByUserId(userId);
+    const issues: Array<{
+      productId: string;
+      productName: string;
+      available: number;
+      requested: number;
+    }> = [];
+
+    for (const item of cart.items) {
+      const product = await productRepository.findById(item.productId);
+
+      if (item.quantity > product.stock) {
+        issues.push({
+          productId: item.productId,
+          productName: item.product.name,
+          available: product.stock,
+          requested: item.quantity,
+        });
+      }
+    }
+
+    return {
+      valid: issues.length === 0,
+      issues,
+    };
+  }
 }
 
 // Exportar instancia singleton

@@ -1,59 +1,59 @@
 .footer {
-    background-color: hsl(var(--card));
-    border-top: 1px solid hsl(var(--border));
-    padding-top: 4rem;
-    margin-top: auto;
-    /* Push to bottom if content is short */
+  background-color: hsl(var(--card));
+  border-top: 1px solid hsl(var(--border));
+  padding-top: 4rem;
+  margin-top: auto;
+  /* Push to bottom if content is short */
 }
 
 .container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-    padding-bottom: 4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  padding-bottom: 4rem;
 }
 
 .title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
 }
 
 .subtitle {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: hsl(var(--foreground));
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: hsl(var(--foreground));
 }
 
 .text {
-    color: hsl(var(--muted-foreground));
-    line-height: 1.6;
-    margin-bottom: 0.5rem;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
 }
 
 .list {
-    list-style: none;
-    padding: 0;
+  list-style: none;
+  padding: 0;
 }
 
 .list li {
-    margin-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .list a {
-    color: hsl(var(--muted-foreground));
-    transition: color 0.2s ease;
+  color: hsl(var(--muted-foreground));
+  transition: color 0.2s ease;
 }
 
 .list a:hover {
-    color: hsl(var(--primary));
+  color: hsl(var(--primary));
 }
 
 .copyright {
-    border-top: 1px solid hsl(var(--border));
-    padding: 1.5rem 0;
-    text-align: center;
-    color: hsl(var(--muted-foreground));
-    font-size: 0.875rem;
+  border-top: 1px solid hsl(var(--border));
+  padding: 1.5rem 0;
+  text-align: center;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.875rem;
 }

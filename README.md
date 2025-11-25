@@ -22,6 +22,7 @@
 ## 🏗️ Decisiones de Arquitectura
 
 El proyecto utiliza la arquitectura de **Next.js App Router**, lo que permite:
+
 - **Server Components**: La mayoría de los componentes se renderizan en el servidor para mejor rendimiento y SEO.
 - **Client Components**: Uso selectivo de `'use client'` solo para interactividad (botones, formularios).
 - **Estructura Modular**: Componentes reutilizables ubicados en `src/components` y páginas en `src/app`.
