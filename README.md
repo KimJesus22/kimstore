@@ -196,4 +196,21 @@ Para más detalles sobre el proceso de contribución, estándares de código, y 
 
 ## 📄 Licencia
 
-Este proyecto es de código abierto y está disponible bajo la licencia MIT.
+Este proyecto es de código abierto y está disponible bajo la [Licencia MIT](LICENSE).
+
+### ¿Qué significa esto?
+
+✅ **Puedes:**
+- Usar el código comercialmente
+- Modificar el código
+- Distribuir el código
+- Usar el código de forma privada
+
+❌ **No puedes:**
+- Responsabilizar a los autores por daños
+- Usar el nombre de los autores para promocionar derivados sin permiso
+
+📋 **Debes:**
+- Incluir el aviso de copyright y la licencia en todas las copias
+
+Para más detalles, consulta el archivo [LICENSE](LICENSE).
