@@ -60,3 +60,21 @@ bun dev
 ```
 
 Abre [http://localhost:3000](http://localhost:3000) en tu navegador para ver el resultado.
+
+## 🤝 Contribuir
+
+¡Las contribuciones son bienvenidas! Si deseas contribuir a este proyecto, por favor:
+
+1. Lee nuestra [Guía de Contribución](CONTRIBUTING.md)
+2. Revisa los [issues abiertos](../../issues)
+3. Crea un fork del repositorio
+4. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+5. Haz commit de tus cambios siguiendo [Conventional Commits](https://www.conventionalcommits.org/)
+6. Push a la rama (`git push origin feature/AmazingFeature`)
+7. Abre un Pull Request
+
+Para más detalles sobre el proceso de contribución, estándares de código, y cómo ejecutar tests, consulta [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## 📄 Licencia
+
+Este proyecto es de código abierto y está disponible bajo la licencia MIT.
