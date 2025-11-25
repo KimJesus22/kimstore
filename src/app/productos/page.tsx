@@ -1,55 +1,37 @@
 import ProductGrid from '@/components/products/ProductGrid';
 import styles from '../page.module.css';
-import { Product } from '@/types/product.types';
+import { productRepository } from '@/repositories/product.repository';
+import { Metadata } from 'next';
 
-const PRODUCTS: Product[] = [
-  {
-    id: '1',
-    name: 'NVIDIA GeForce RTX 4090',
-    description: 'Tarjeta gráfica de alto rendimiento',
-    price: 1599.99,
-    category: 'GPU',
-    image: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=800&q=80',
-    stock: 10,
-    featured: true,
-    slug: 'nvidia-rtx-4090',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '2',
-    name: 'Intel Core i9-14900K',
-    description: 'Procesador de última generación',
-    price: 589.99,
-    category: 'CPU',
-    image: 'https://images.unsplash.com/photo-1555617981-dac3880eac6e?w=800&q=80',
-    stock: 15,
-    featured: true,
-    slug: 'intel-i9-14900k',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: '3',
-    name: 'Samsung 990 PRO 2TB',
-    description: 'SSD NVMe de alta velocidad',
-    price: 169.99,
-    category: 'Storage',
-    image: 'https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=800&q=80',
-    stock: 20,
-    featured: true,
-    slug: 'samsung-990-pro-2tb',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
+// Configurar ISR: Revalidar cada 30 segundos
+export const revalidate = 30;
 
-export default function ProductsPage() {
+export const metadata: Metadata = {
+  title: 'Catálogo de Productos | KimStore',
+  description:
+    'Explora nuestro catálogo completo de componentes de PC de alto rendimiento. GPU, CPU, RAM, almacenamiento y más.',
+  openGraph: {
+    title: 'Catálogo de Productos | KimStore',
+    description:
+      'Explora nuestro catálogo completo de componentes de PC de alto rendimiento.',
+  },
+};
+
+export default async function ProductsPage() {
+  // Obtener productos de la base de datos
+  const { products } = await productRepository.findAll(
+    {},
+    { limit: 50, sortBy: 'createdAt', sortOrder: 'desc' }
+  );
+
   return (
     <main className={styles.main}>
       <div className="container" style={{ paddingTop: '2rem' }}>
         <h1 className={styles.sectionTitle}>Catálogo Completo</h1>
-        <ProductGrid products={PRODUCTS} />
+        <p style={{ textAlign: 'center', marginBottom: '2rem', color: 'var(--color-text-secondary)' }}>
+          Descubre nuestra selección de componentes de PC de alta calidad
+        </p>
+        <ProductGrid products={products as any} />
       </div>
     </main>
   );
