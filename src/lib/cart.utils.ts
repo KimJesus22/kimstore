@@ -25,6 +25,7 @@ export function calculateTax(subtotal: number): number {
  * Calcula el costo de envío
  */
 export function calculateShipping(subtotal: number): number {
+  if (subtotal === 0) return 0;
   return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
 }
 

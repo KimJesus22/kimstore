@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { formatPrice } from '@/lib/cart.utils';
 import Image from 'next/image';
 import styles from './ProductCard.module.css';
 import Button from '../ui/Button';
@@ -9,6 +9,7 @@ interface Product {
   price: number;
   image: string;
   category: string;
+  stock: number;
 }
 
 interface ProductCardProps {
@@ -35,10 +36,14 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
         <span className={styles.category}>{product.category}</span>
         <h3 className={styles.title}>{product.name}</h3>
         <div className={styles.footer}>
-          <span className={styles.price}>${product.price.toFixed(2)}</span>
-          <Button variant="secondary" size="sm">
-            Añadir
-          </Button>
+          <span className={styles.price}>{formatPrice(product.price)}</span>
+          {product.stock > 0 ? (
+            <Button variant="secondary" size="sm">
+              Añadir
+            </Button>
+          ) : (
+            <span className="text-red-500 font-bold text-sm">Sin Stock</span>
+          )}
         </div>
       </div>
     </div>
