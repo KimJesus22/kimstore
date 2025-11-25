@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../node_modules/.prisma/client"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -11,6 +10,7 @@ model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
+  name      String?
   role      String   @default("user") // "admin" or "user"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -18,16 +18,24 @@ model User {
 }
 
 model Product {
-  id          String   @id @default(uuid())
+  id          String      @id @default(uuid())
   name        String
   description String
   price       Float
   category    String
   image       String
-  stock       Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  stock       Int         @default(0)
+  featured    Boolean     @default(false)
+  slug        String      @unique
+  brand       String?
+  specs       Json?       // Especificaciones técnicas como JSON
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
   orderItems  OrderItem[]
+
+  @@index([category])
+  @@index([featured])
+  @@index([slug])
 }
 
 model Order {
