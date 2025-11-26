@@ -16,6 +16,8 @@ model User {
   updatedAt DateTime @updatedAt
   orders    Order[]
   cart      Cart?
+  
+  @@index([role])
 }
 
 model Product {
@@ -35,9 +37,18 @@ model Product {
   orderItems  OrderItem[]
   cartItems   CartItem[]
 
+  // Índices básicos
   @@index([category])
   @@index([featured])
   @@index([slug])
+  
+  // Índices compuestos para queries frecuentes
+  @@index([category, createdAt(sort: Desc)])
+  @@index([featured, createdAt(sort: Desc)])
+  @@index([category, price])
+  @@index([price])
+  @@index([stock])
+  @@index([createdAt(sort: Desc)])
 }
 
 model Cart {
@@ -60,6 +71,8 @@ model CartItem {
   updatedAt DateTime @updatedAt
 
   @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
 }
 
 model Order {
@@ -71,6 +84,11 @@ model Order {
   status    String      @default("pending") // pending, paid, shipped, delivered
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  
+  // Índices para queries frecuentes
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([status, createdAt(sort: Desc)])
+  @@index([createdAt(sort: Desc)])
 }
 
 model OrderItem {
@@ -81,4 +99,7 @@ model OrderItem {
   product   Product @relation(fields: [productId], references: [id])
   quantity  Int
   price     Float   // Price at time of purchase
+  
+  @@index([orderId])
+  @@index([productId])
 }
